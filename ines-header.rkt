@@ -11,8 +11,21 @@
    flags10)
   #:prefab)
 
-; TODO: constraint for bytes (should be byte vector of size 16)
-(define (bytes->ines-header bytev)
+(define (byte/c x)
+  (flat-named-contract
+   'byte
+   (and/c natural-number/c (between/c 0 #xff))))
+
+(define/contract (vector-length= n)
+  (natural-number/c . -> . flat-contract?)
+  (flat-named-contract
+   'vector-length=
+   (lambda (v)
+     (and (vector? v)
+          (eqv? (vector-length v) 16)))))
+
+(define/contract (bytes->ines-header bytev)
+  ((and/c (vectorof byte/c) (vector-length= 16)) . -> . ines-header?)
   (ines-header (vector-ref bytev 4)
                (vector-ref bytev 8)
                (vector-ref bytev 5)
@@ -21,20 +34,24 @@
                (vector-ref bytev 9)
                (vector-ref bytev 10)))
 
-(define (tv-system ines-header)
+(define/contract (tv-system ines-header)
+  (ines-header? . -> . (one-of/c 'pal 'ntsc))
   (let ([tv-system-flag (bitwise-bit-set? (ines-header-flags9 ines-header) 0)])
     (if tv-system-flag
         'pal
         'ntsc)))
 
-(define (mapper-number ines-header)
+(define/contract (mapper-number ines-header)
+  (ines-header? . -> . byte/c)
   (let ([lower-nibble (bitwise-and #xf0 (ines-header-flags6 ines-header))]
         [upper-nibble (bitwise-and #xf0 (ines-header-flags7 ines-header))])
     (+ (arithmetic-shift lower-nibble -4)
        upper-nibble)))
 
-(define (has-trainer? ines-header)
+(define/contract (has-trainer? ines-header)
+  (ines-header? . -> . boolean?)
   (bitwise-bit-set? (ines-header-flags6 ines-header) 2))
 
-(define (vs-unisystem? ines-header)
+(define/contract (vs-unisystem? ines-header)
+  (ines-header? . -> . boolean?)
   (bitwise-bit-set? (ines-header-flags7 ines-header) 0))
