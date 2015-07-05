@@ -30,9 +30,9 @@
                             (cycles cycles/c))]
             [mk-opcode (->* (mnemonic/c
                              bytes/c
-                             #:cycles cycles/c)
-                            (#:mode mode/c
-                             #:register register/c)
+                             #:cycles cycles/c
+                             #:mode mode/c)
+                            (#:register register/c)
                             opcode?)]))
   
   (define (mk-opcode code
@@ -45,7 +45,7 @@
 (require 'opcode)
 
 (define opcodes
-  (hash #x00 (mk-opcode 'brk 1 #:cycles 2)
+  (hash #x00 (mk-opcode 'brk 1 #:cycles 2 #:mode 'implied)
         #x01 (mk-opcode 'ora 2 #:cycles 6 #:mode 'indirect #:register 'x)
         #x05 (mk-opcode 'ora 2 #:cycles 3 #:mode 'zp)
         #x06 (mk-opcode 'asl 2 #:cycles 5 #:mode 'zp)
@@ -81,7 +81,7 @@
         #x39 (mk-opcode 'and 3 #:cycles 4 #:mode 'absolute #:register 'y) ; +1 cycle if page boundary crossed
         #x3d (mk-opcode 'and 3 #:cycles 4 #:mode 'absolute #:register 'x) ; +1 cycle if page boundary crossed
         #x3e (mk-opcode 'rol 3 #:cycles 7 #:mode 'absolute #:register 'x)
-        #x40 (mk-opcode 'rti 1 #:cycles 6)
+        #x40 (mk-opcode 'rti 1 #:cycles 6 #:mode 'implied)
         #x41 (mk-opcode 'eor 2 #:cycles 6 #:mode 'indirect #:register 'x)
         #x45 (mk-opcode 'eor 2 #:cycles 3 #:mode 'zp)
         #x46 (mk-opcode 'lsr 2 #:cycles 5 #:mode 'zp)
@@ -101,4 +101,39 @@
         #x5e (mk-opcode 'lsr 3 #:cycles 7 #:mode 'absolute #:register 'x)
         #x60 (mk-opcode 'rts 1 #:cycles 6 #:mode 'implied)
         #x61 (mk-opcode 'adc 2 #:cycles 6 #:mode 'indirect #:register 'x)
+        #x65 (mk-opcode 'adc 2 #:cycles 5 #:mode 'zp)
+        #x66 (mk-opcode 'ror 2 #:cycles 5 #:mode 'zp)
+        #x68 (mk-opcode 'pla 1 #:cycles 4 #:mode 'implied)
+        #x69 (mk-opcode 'adc 2 #:cycles 2 #:mode 'immediate)
+        #x6a (mk-opcode 'ror 1 #:cycles 2 #:mode 'acc)
+        #x6c (mk-opcode 'jmp 3 #:cycles 5 #:mode 'indirect)
+        #x6d (mk-opcode 'adc 3 #:cycles 4 #:mode 'absolute)
+        #x6e (mk-opcode 'ror 3 #:cycles 6 #:mode 'absolute)
+        #x70 (mk-opcode 'bvs 2 #:cycles 2 #:mode 'relative)               ; see bpl
+        #x71 (mk-opcode 'adc 2 #:cycles 5 #:mode 'indirect #:register 'y) ; +1 cycle if page boundary crossed
+        #x75 (mk-opcode 'adc 2 #:cycles 4 #:mode 'zp #:register 'x)
+        #x76 (mk-opcode 'ror 2 #:cycles 6 #:mode 'zp #:register 'x)
+        #x78 (mk-opcode 'sei 1 #:cycles 2 #:mode 'implied)
+        #x79 (mk-opcode 'adc 3 #:cycles 4 #:mode 'absolute #:register 'y) ; +1 cycle if page boundary crossed
+        #x7d (mk-opcode 'adc 3 #:cycles 4 #:mode 'absolute #:register 'x) ; +1 cycle if page boundary crossed
+        #x7e (mk-opcode 'ror 3 #:cycles 7 #:mode 'absolute #:register 'x)
+        #x81 (mk-opcode 'sta 2 #:cycles 6 #:mode 'indirect #:register 'x)
+        #x84 (mk-opcode 'sty 2 #:cycles 3 #:mode 'zp)
+        #x85 (mk-opcode 'sta 2 #:cycles 3 #:mode 'zp)
+        #x86 (mk-opcode 'stx 2 #:cycles 3 #:mode 'zp)
+        #x88 (mk-opcode 'dey 1 #:cycles 2 #:mode 'implied)
+        #x8a (mk-opcode 'txa 1 #:cycles 2 #:mode 'implied)
+        #x8c (mk-opcode 'sty 3 #:cycles 4 #:mode 'absolute)
+        #x8d (mk-opcode 'sta 3 #:cycles 4 #:mode 'absolute)
+        #x8e (mk-opcode 'stx 3 #:cycles 4 #:mode 'absolute)
+        #x90 (mk-opcode 'bcc 2 #:cycles 2 #:mode 'relative) ; see bpl
+        #x91 (mk-opcode 'sta 2 #:cycles 5 #:mode 'indirect #:register 'y) ; +1 cycle if page boundary crossed
+        #x94 (mk-opcode 'sty 2 #:cycles 4 #:mode 'zp #:register 'x)
+        #x95 (mk-opcode 'sta 2 #:cycles 4 #:mode 'zp #:register 'x)
+        #x96 (mk-opcode 'stx 2 #:cycles 4 #:mode 'zp #:register 'y)
+        #x98 (mk-opcode 'tya 1 #:cycles 2 #:mode 'implied)
+        #x99 (mk-opcode 'sta 3 #:cycles 4 #:mode 'absolute #:register 'y) ; +1 cycle if page boundary crossed
+        #x9a (mk-opcode 'txs 1 #:cycles 2 #:mode 'implied)
+        #x9d (mk-opcode 'sta 3 #:cycles 4 #:mode 'absolute #:register 'x) ; +1 cycle if page boundary crossed
+        #xa0 (mk-opcode 'ldy 2 #:cycles 2 #:mode 'immediate)
         ))
