@@ -1,19 +1,48 @@
 #lang racket
 (provide (all-defined-out))
 
-(struct opcode
-  (mnemonic
-   bytes
-   mode
-   register
-   cycles))
+(module opcode racket
+  (struct opcode
+    (mnemonic
+     bytes
+     mode
+     register
+     cycles))
+  
+  (define (symbol-of-length-3? a-sym)
+    (= 3 (string-length (symbol->string a-sym))))
+  (define cycles/c
+    (and/c positive? natural-number/c))
+  (define mnemonic/c
+    (and/c symbol? symbol-of-length-3?))
+  (define mode/c
+    (one-of/c 'indirect 'zp 'implied 'immediate 'absolute 'relative 'acc))
+  (define bytes/c
+    (one-of/c 1 2 3))
+  (define register/c
+    (one-of/c 'x 'y 'none))
+  
+  (provide (contract-out
+            [struct opcode ((mnemonic mnemonic/c)
+                            (bytes bytes/c)
+                            (mode mode/c)
+                            (register register/c)
+                            (cycles cycles/c))]
+            [mk-opcode (->* (mnemonic/c
+                             bytes/c
+                             #:cycles cycles/c)
+                            (#:mode mode/c
+                             #:register register/c)
+                            opcode?)]))
+  
+  (define (mk-opcode code
+                     bytes
+                     #:mode [mode 'none]
+                     #:register [reg 'none]
+                     #:cycles cycles)
+    (opcode code bytes mode reg cycles)))
 
-(define (mk-opcode code
-                   bytes
-                   #:mode [mode 'none]
-                   #:register [reg 'none]
-                   #:cycles cycles)
-  (opcode code bytes mode reg cycles))
+(require 'opcode)
 
 (define opcodes
   (hash #x00 (mk-opcode 'brk 1 #:cycles 2)
