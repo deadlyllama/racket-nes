@@ -33,7 +33,7 @@
          [prg-bytes-start (drop bytes ignored-bytes)])
     (vector->immutable-vector
      (list->vector
-      (take bytes prg-rom-bytes)))))
+      (take prg-bytes-start prg-rom-bytes)))))
 
 (define (header-bytes bytes)
   (vector->immutable-vector

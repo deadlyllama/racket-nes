@@ -6,7 +6,8 @@
     (mnemonic
      mode
      register
-     cycles))
+     cycles)
+    #:prefab)
   
   (define (symbol-of-length-3? a-sym)
     (= 3 (string-length (symbol->string a-sym))))
@@ -94,7 +95,7 @@
         #x4a (mk-opcode 'lsr #:cycles 2 #:mode 'acc)
         #x4c (mk-opcode 'jmp #:cycles 3 #:mode 'absolute)
         #x4d (mk-opcode 'eor #:cycles 4 #:mode 'absolute)
-        #x43 (mk-opcode 'lsr #:cycles 6 #:mode 'absolute)
+        #x4e (mk-opcode 'lsr #:cycles 6 #:mode 'absolute)
         #x50 (mk-opcode 'bvc #:cycles 2 #:mode 'relative)               ; see bpl
         #x51 (mk-opcode 'eor #:cycles 5 #:mode 'indirect #:register 'y) ; +1 cycle if page boundary crossed
         #x55 (mk-opcode 'eor #:cycles 4 #:mode 'zp #:register 'x)
