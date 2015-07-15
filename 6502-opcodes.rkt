@@ -1,5 +1,5 @@
 #lang racket
-(provide (all-defined-out))
+(provide (all-defined-out) instruction-length)
 
 (module opcode racket
   (struct opcode

@@ -1,5 +1,6 @@
 #lang racket
 (require "ines-header.rkt")
+(require "6502-opcodes.rkt")
 
 (define ines-header-size 16)
 (define trainer-size 512)
@@ -39,6 +40,27 @@
   (vector->immutable-vector
    (list->vector
     (take bytes ines-header-size))))
+
+(struct op
+  (hex
+   code
+   param)
+  #:prefab)
+
+(define (disassemble prg-rom location)
+  (if (>= location (vector-length prg-rom))
+      empty-stream
+      (let* ([current (vector-ref prg-rom location)]
+             [opcode (hash-ref opcodes current)]
+             [param-length (sub1 (instruction-length opcode))]
+             [hex (format "~x" current)])
+        (if (zero? param-length)
+            (stream-cons (op hex opcode 'none)
+                  (disassemble prg-rom (add1 location)))
+            (let* ([param-start (add1 location)]
+                   [next-location (+ param-start param-length)])
+              (stream-cons (op hex opcode (vector-copy prg-rom param-start next-location))
+                  (disassemble prg-rom next-location)))))))
 
 (struct ines-rom
   (header
