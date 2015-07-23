@@ -16,7 +16,7 @@
   (define mnemonic/c
     (and/c symbol? symbol-of-length-3?))
   (define mode/c
-    (one-of/c 'indirect 'zp 'implied 'immediate 'absolute 'relative 'acc))
+    (one-of/c 'indirect 'indirect-long 'zp 'implied 'immediate 'absolute 'relative 'acc))
   (define bytes/c
     (one-of/c 1 2 3))
   (define register/c
@@ -43,7 +43,7 @@
   (define (instruction-length opcode)
     (let ([mode (opcode-mode opcode)])
       (cond
-        ((eq? mode 'absolute) 3)
+        ((or (eq? mode 'absolute) (eq? mode 'indirect-long)) 3)
         ((or (eq? mode 'implied) (eq? mode 'acc)) 1)
         (else 2)))))
 
@@ -111,7 +111,7 @@
         #x68 (mk-opcode 'pla #:cycles 4 #:mode 'implied)
         #x69 (mk-opcode 'adc #:cycles 2 #:mode 'immediate)
         #x6a (mk-opcode 'ror #:cycles 2 #:mode 'acc)
-        #x6c (mk-opcode 'jmp #:cycles 5 #:mode 'indirect)
+        #x6c (mk-opcode 'jmp #:cycles 5 #:mode 'indirect-long)
         #x6d (mk-opcode 'adc #:cycles 4 #:mode 'absolute)
         #x6e (mk-opcode 'ror #:cycles 6 #:mode 'absolute)
         #x70 (mk-opcode 'bvs #:cycles 2 #:mode 'relative)               ; see bpl
