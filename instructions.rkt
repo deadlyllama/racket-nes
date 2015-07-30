@@ -24,9 +24,10 @@
          [new-state (state-set-carry a-state carry)])
     (state-set-a new-state masked)))
 
-(define (lsr a-state a-value amount)
-  (let* ([shifted (arithmetic-shift a-value (- amount))]
-         [carry (bitwise-bit-set? a-value 0)]
+(define (lsr a-state amount)
+  (let* ([current (state-a a-state)]
+         [shifted (arithmetic-shift current (- amount))]
+         [carry (bitwise-bit-set? current 0)]
          [new-state (state-set-carry a-state carry)])
     (state-set-a new-state shifted)))
 
