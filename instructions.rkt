@@ -41,4 +41,5 @@
 
 (define instructions
   (hash 'nop nop
-        'asl asl))
+        'asl asl
+        'lsr lsr))
